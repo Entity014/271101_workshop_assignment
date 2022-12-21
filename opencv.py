@@ -6,6 +6,7 @@ def videoCap():
     cap = cv2.VideoCapture(0)
     while True:
         check, frame = cap.read()
+        cv2.flip(frame, 1)
         
         cv2.putText(frame, "Press E to close", (200, 470), cv2.FONT_HERSHEY_PLAIN, 2, (57, 130, 247), 3)
         if check == True:
@@ -26,6 +27,7 @@ def detectFinger():
     
     while True:
         check, frame = cap.read()
+        cv2.flip(frame, 1)
         imgRGB = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = hands.process(imgRGB)
         print(results.multi_hand_landmarks)
@@ -63,6 +65,7 @@ def detectPos():
             fps = frame_count / elapsed_time
         
         check, frame = cap.read()
+        cv2.flip(frame, 1)
         imgRGB = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = hands.process(imgRGB)
         # * print(results.multi_hand_landmarks)
@@ -98,6 +101,7 @@ def detectSym():
     
     while True:
         check, frame = cap.read()
+        cv2.flip(frame, 1)
         imgRGB = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = hands.process(imgRGB)
         # * print(results.multi_hand_landmarks)
