@@ -23,7 +23,7 @@ def Menu():
             print("Please enter in 1 - 5")
 
 def main():
-    Menu()
+    detectHand()
 
 if __name__ == '__main__':
     main()
