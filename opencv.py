@@ -220,16 +220,16 @@ def detectHand1():
 
 def handCheck(direct, finger, side : str):
     for i in range(4, 21, 4):
-                        x1, y1 = np.subtract(direct[i], direct[0])
-                        x2, y2 = np.subtract(direct[4], direct[17])
-                        x3, y3 = np.subtract(direct[9], direct[5])
-                        z1, z2, z3= math.sqrt(pow(x1, 2) + pow(y1, 2)), math.sqrt(pow(x2, 2) + pow(y2, 2)), math.sqrt(pow(x3, 2) + pow(y3, 2))
-                        if (z3 != 0) & (i > 4):
-                            if (z1/z3) * 20 > 100:
-                                finger.append(f"{(i/4) - 1}{side}")
-                        if (z3 != 0) & (i == 4):
-                            if (z2/z3) * 20 > 100:
-                                finger.append(f"{(i/4) - 1}{side}")
+        x1, y1 = np.subtract(direct[i], direct[0])
+        x2, y2 = np.subtract(direct[4], direct[17])
+        x3, y3 = np.subtract(direct[9], direct[5])
+        z1, z2, z3= math.sqrt(pow(x1, 2) + pow(y1, 2)), math.sqrt(pow(x2, 2) + pow(y2, 2)), math.sqrt(pow(x3, 2) + pow(y3, 2))
+        if (z3 != 0) & (i > 4):
+            if (z1/z3) * 20 > 100:
+                finger.append(f"{(i/4) - 1}{side}")
+        if (z3 != 0) & (i == 4):
+            if (z2/z3) * 20 > 100:
+                finger.append(f"{(i/4) - 1}{side}")
 
 def detectHand2():
     cap = cv2.VideoCapture(0)
