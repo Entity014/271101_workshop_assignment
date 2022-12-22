@@ -1,7 +1,7 @@
 from opencv import *
 
 def main():
-    detectHand()
+    detectHand2()
 
 if __name__ == '__main__':
     main()
