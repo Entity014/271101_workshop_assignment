@@ -2,6 +2,7 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import time
+import math
 
 def switch(argument):
     if argument == 1:
@@ -154,7 +155,7 @@ def detectSym():
     cap.release()
     cv2.destroyAllWindows()
 
-def detectHand():
+def detectHand1():
     cap = cv2.VideoCapture(0)
     
     arr = np.zeros((21, 2))
@@ -216,3 +217,62 @@ def detectHand():
             break
     cap.release()
     cv2.destroyAllWindows()
+
+def detectHand2():
+    cap = cv2.VideoCapture(0)
+    
+    arr = np.zeros((21, 2))
+    
+    mpHands = mp.solutions.hands
+    hands = mpHands.Hands()
+    mpDraw = mp.solutions.drawing_utils
+    
+    while cap.isOpened():
+        finger = []
+        check, frame = cap.read()
+        imgRGB = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        results = hands.process(imgRGB)
+        if results.multi_hand_landmarks:
+            for handLms in results.multi_hand_landmarks:
+                for id, lm in enumerate(handLms.landmark):
+                    h, w, c = frame.shape
+                    cx, cy = int(lm.x * w), int(lm.y * h)
+                    arr[id] = [cx, -cy]
+                mpDraw.draw_landmarks(frame, handLms, mpHands.HAND_CONNECTIONS)
+                if np.cross(np.subtract(arr[5], arr[0]), np.subtract(arr[17], arr[5])) >0: 
+                    for i in range(4, 21, 4):
+                        x1, y1 = np.subtract(arr[i], arr[i - 3])
+                        x2, y2 = np.subtract(arr[9], arr[5])
+                        z1, z2= math.sqrt(pow(x1, 2) + pow(y1, 2)), math.sqrt(pow(x2, 2) + pow(y2, 2))
+                        if (z2 != 0) & (i > 4):
+                            if (z1/z2) * 20 > 70:
+                                finger.append(f"{(i/4) - 1}R")
+                        if (z2 != 0) & (i == 4):
+                            if (z1/z2) * 20 > 60:
+                                finger.append("HR")
+                else:
+                    for i in range(4, 21, 4):
+                        x1, y1 = np.subtract(arr[i], arr[i - 3])
+                        x2, y2 = np.subtract(arr[9], arr[5])
+                        z1, z2= math.sqrt(pow(x1, 2) + pow(y1, 2)), math.sqrt(pow(x2, 2) + pow(y2, 2))
+                        if (z2 != 0) & (i > 4):
+                            if (z1/z2) * 20 > 70:
+                                finger.append(f"{(i/4) - 1}L")
+                        if (z2 != 0) & (i == 4):
+                            if (z1/z2) * 20 > 60:
+                                finger.append("HL")
+        
+        cv2.putText(frame, "Finger : ", (10, 70), cv2.FONT_HERSHEY_PLAIN, 1, (218, 224, 159), 2)
+        cv2.putText(frame, f"Finger Count: ", (10, 40), cv2.FONT_HERSHEY_PLAIN, 2, (218, 224, 159), 3)
+        if len(finger) != 0:
+            cv2.putText(frame, f"{' '.join(finger)}", (85, 70), cv2.FONT_HERSHEY_PLAIN, 1, (47, 209, 29), 2)
+            cv2.putText(frame, f"{str(len(finger))}", (245, 40), cv2.FONT_HERSHEY_PLAIN, 2, (47, 209, 29), 3)
+        else:
+            cv2.putText(frame, "None", (85, 70), cv2.FONT_HERSHEY_PLAIN, 1, (57, 130, 247), 2)
+            cv2.putText(frame, f"{str(len(finger))}", (245, 40), cv2.FONT_HERSHEY_PLAIN, 2, (57, 130, 247), 3)
+        if check == True:
+            cv2.imshow("Video", frame)
+            if cv2.waitKey(1) & 0xFF == ord('e'):
+                break
+        else:
+            break
