@@ -218,6 +218,19 @@ def detectHand1():
     cap.release()
     cv2.destroyAllWindows()
 
+def handCheck(direct, finger, side : str):
+    for i in range(4, 21, 4):
+                        x1, y1 = np.subtract(direct[i], direct[0])
+                        x2, y2 = np.subtract(direct[4], direct[17])
+                        x3, y3 = np.subtract(direct[9], direct[5])
+                        z1, z2, z3= math.sqrt(pow(x1, 2) + pow(y1, 2)), math.sqrt(pow(x2, 2) + pow(y2, 2)), math.sqrt(pow(x3, 2) + pow(y3, 2))
+                        if (z3 != 0) & (i > 4):
+                            if (z1/z3) * 20 > 100:
+                                finger.append(f"{(i/4) - 1}{side}")
+                        if (z3 != 0) & (i == 4):
+                            if (z2/z3) * 20 > 100:
+                                finger.append(f"{(i/4) - 1}{side}")
+
 def detectHand2():
     cap = cv2.VideoCapture(0)
     
@@ -239,29 +252,10 @@ def detectHand2():
                     cx, cy = int(lm.x * w), int(lm.y * h)
                     arr[id] = [cx, -cy]
                 mpDraw.draw_landmarks(frame, handLms, mpHands.HAND_CONNECTIONS)
-                if np.cross(np.subtract(arr[5], arr[0]), np.subtract(arr[17], arr[5])) >0: 
-                    for i in range(4, 21, 4):
-                        x1, y1 = np.subtract(arr[i], arr[i - 3])
-                        x2, y2 = np.subtract(arr[9], arr[5])
-                        z1, z2= math.sqrt(pow(x1, 2) + pow(y1, 2)), math.sqrt(pow(x2, 2) + pow(y2, 2))
-                        if (z2 != 0) & (i > 4):
-                            if (z1/z2) * 20 > 70:
-                                finger.append(f"{(i/4) - 1}R")
-                        if (z2 != 0) & (i == 4):
-                            if (z1/z2) * 20 > 60:
-                                finger.append("HR")
+                if np.cross(np.subtract(arr[5], arr[0]), np.subtract(arr[17], arr[5])) > 0: 
+                    handCheck(arr, finger, "R")
                 else:
-                    for i in range(4, 21, 4):
-                        x1, y1 = np.subtract(arr[i], arr[i - 3])
-                        x2, y2 = np.subtract(arr[9], arr[5])
-                        z1, z2= math.sqrt(pow(x1, 2) + pow(y1, 2)), math.sqrt(pow(x2, 2) + pow(y2, 2))
-                        if (z2 != 0) & (i > 4):
-                            if (z1/z2) * 20 > 70:
-                                finger.append(f"{(i/4) - 1}L")
-                        if (z2 != 0) & (i == 4):
-                            if (z1/z2) * 20 > 60:
-                                finger.append("HL")
-        
+                    handCheck(arr, finger, "L")
         cv2.putText(frame, "Finger : ", (10, 70), cv2.FONT_HERSHEY_PLAIN, 1, (218, 224, 159), 2)
         cv2.putText(frame, f"Finger Count: ", (10, 40), cv2.FONT_HERSHEY_PLAIN, 2, (218, 224, 159), 3)
         if len(finger) != 0:
